@@ -1,0 +1,84 @@
+"use strict"
+import { createStore } from 'redux';
+//STEP 3
+const reducer = function (state = { books: [] }, action) {
+    switch (action.type) {
+        case 'SAVE_BOOK':
+            //         let books = state.books.concat(action.payload);
+            //    return {books};
+            return { books: [...state.books, ...action.payload] }
+            break;
+
+        case 'UPDATE_BOOK':
+            const currentBooksToUpdate = [...state.books];
+            // let indexToDelete = books.indexOf(id);
+            const indexToUpdate = currentBooksToUpdate.findIndex(book => book.id == action.payload.id)
+            console.log(indexToUpdate);
+            let newBook = {
+                ...currentBooksToUpdate[indexToUpdate],
+                title: action.payload.title
+            }
+            console.log(newBook);
+
+            return { books: [...currentBooksToUpdate.slice(0, indexToUpdate), newBook, ...currentBooksToUpdate.slice(indexToUpdate + 1)] }
+            break;
+
+        case 'DELETE_BOOK':
+            const currentBooksToDelete = [...state.books];
+            // let indexToDelete = books.indexOf(id);
+            const indexToDelete = currentBooksToDelete.findIndex(book => book.id == action.payload.id)
+            console.log(indexToDelete);
+
+            return { books: [...currentBooksToDelete.slice(0, indexToDelete), ...currentBooksToDelete.slice(indexToDelete + 1)] }
+            break;
+
+    }
+    return state
+}
+
+
+
+// step 1 create store
+let store = createStore(reducer);
+
+store.subscribe(function () {
+    console.log('Current state is', store.getState());
+})
+
+
+
+// step 2 create and dispatch actions
+store.dispatch({
+    type: 'SAVE_BOOK',
+    payload: [{
+        id: '1',
+        name: 'The New Man',
+        author: 'Femi Ademiluyi',
+        price: 300
+
+    }]
+})
+
+store.dispatch({
+    type: 'SAVE_BOOK',
+    payload: [{
+        id: '2',
+        name: 'The New Man2',
+        author: 'Femi Ademiluyi2',
+        price: 3002
+
+    }]
+})
+
+store.dispatch({
+    type: 'DELETE_BOOK',
+    payload: { id: 2 }
+})
+
+store.dispatch({
+    type: 'UPDATE_BOOK',
+    payload: {
+        id: 1,
+        title: 'Learn React in 24hrs'
+    }
+})
